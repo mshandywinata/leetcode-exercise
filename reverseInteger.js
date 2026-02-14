@@ -1,18 +1,19 @@
-// get number e.g 244
-// 1. m = 244 / 10 => 24.4 => 24, n = 4 + 0 = 4
-// 2. m = 24 / 10 => 2, n = 4 + 40 = 44
-// 3. m = 2 / 10 => 0
-
 var reverse = function(x) {
-    var m = Math.abs(x); var n = 0; var sign = Math.sign(x);
+    // temp vars
+    // convert to abs val of x
+    var m = Math.abs(x); var n = 0;
 
+    // loop over so last digit of m would be first digit of n
+    // and so on
     while (m > 0) {
         n = (m % 10) + (n * 10); m = Math.floor(m / 10);
-    } n *= sign;
+    }
 
+    // set limitation
     if (n < Math.pow(-2, 31) || n > (Math.pow(2, 31) - 1)) {
         return 0;
-    } return n; 
+    } return n * Math.sign(x);
+    // reverse the value if its negative
 }
 
 console.log(reverse(-244));
