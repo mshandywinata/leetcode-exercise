@@ -1,11 +1,14 @@
 var reduce = function(nums, fn, init) {
-        let val = init;
-        if (!nums) {
-            return init;
-        }
-        for (let i = 0; i < nums.length; i++) {
-            val = fn(val, nums[i]);
-        } return val;
+    // initialize accumulation
+    let val = init;
+    // return init if arr empty
+    if (!nums) {
+        return init;
+    }
+    // loop over each element
+    for (n of nums) {
+        val = fn(val, n);
+    } return val;
 }
 
 const nums = [1, 2, 3, 4];
