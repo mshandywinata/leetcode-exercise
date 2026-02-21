@@ -8,7 +8,7 @@ var isPrime = function(n) {
 }
 
 var countPrimeSetBits = function(left, right) {
-    // initialize how count
+    // initialize count
     count = 0;
 
     // loop over from inclusive left and right value
