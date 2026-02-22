@@ -1,82 +1,98 @@
-var binaryGap = function(n) {
-    // convert to arr of bits
-    let bits = n.toString(2).split("");
-    // filter only the '1'
-    let ones = bits.filter(x => x === '1');
-    // immediately give 0 if no pair of '1'
-    if (ones.length === 1) {
-        return 0;
-    }
-    // create empty arr for each pair
-    let adjPairs = new Array(ones.length - 1).fill().map(() => []);
-    // mark the index of end pair of '1'
-    let mark = 0;
-    // count max length
-    let maxLength = 0;
+// var binaryGap = function(n) {
+//     let bits = n.toString(2).split("");
+//     let ones = bits.filter(x => x === '1');
+//     // concecutive pair is n - 1, where n is how many element
+//     let pairCount = ones.length - 1;
 
-    // loop over each possible pair 
-    for (let i = 0; i < ones.length - 1; i++) {
+//     // if the bits only consist of 1 of '1' then it must have no pair
+//     if (pairCount === 1) return 0;
+    
+//     // every pair need its own array
+//     let adjPairs = new Array(pairCount).fill().map(() => []);
+    
+//     // track every pair
+//     let nextIndex = 0;
+//     let maxLength = 0;
+
+//     for (let i = 0; i < pairCount; i++) {
+//         for (let j = nextIndex; j < bits.length; j++) {
+//             // current bit is opener of a pair
+//             if (adjPairs[i].length === 0 && bits[j] === '1') {
+//                 adjPairs[i].push(bits[j]);
+//             // current bit is the end of a pair
+//             } else if (bits[j] === '1') {
+//                 // current bit is the opener of next pair
+//                 nextIndex = j;
+//                 adjPairs[i].push(bits[j]);
+//                 break;
+//             }
+            
+//             // current bit is '0'
+//             adjPairs[i].push(bits[j]);
+//         }
         
-        // loop over each bit
-        for (let j = mark; j < bits.length; j++) {
-            // insert '1' if a pair arr is empty
-            if (!adjPairs[i].length) {
-                if (bits[j] === '1') {
-                    adjPairs[i].push(bits[j]);
-                } else {
-                    continue;
-                }
-            // insert '1' as last element of arr pair
-            // mark the element as the beggining of next iteration of possible pair
-            } else if (bits[j] === '1') {
-                mark = j;
-                adjPairs[i].push(bits[j]);
-                break;
-            // insert every '0' between the '1'
-            } else {
-                adjPairs[i].push(bits[j]);
-            }
-        }
+//         // gap is element length - 1
+//         let gap = adjPairs[i].length - 1;
+//         maxLength = Math.max(maxLength, gap);
+//     }
+//     return maxLength;
+// }
 
-        // calculate the gap of a pair
-        let gap = (adjPairs[i].length) - 1
-        // replace it as new max if gap is bigger than current max
-        maxLength = Math.max(maxLength, gap);
-    }
-    // finally, give the final max
-    return maxLength;
-}
+// the code above its quite complicated
+var binaryGap = function(n) {
+    // power of 2 has no pair of bit
+    if (Number.isInteger(Math.log2(n))) return 0;
 
-// the code above its a bit of complicated
-// below is the true solution
-var binaryGapSolution = function(n) {
-    // remove trailing '0'
-    n /= (n & -n);
-    // give 0 if n is base 2 (base 2 doesn't have pair)
-    if (n === 1) return 0;
+    // needed to inspect every bit
+    const bits = n.toString(2).split("");
+    let max = 0, gap = 0, openerIndex = 0;
 
-    // initialize values
-    let max = 0, gap = 0;
-
-    // loop trough each bit
-    while (n) {
-        // set max and reset gap if it ends 1
-        if (n & 1) {
+    for (let i = openerIndex; i < bits.length; i++) {
+        if (bits[i] === '1') {
             max = Math.max(max, gap);
+            // current bit is opener for next pair
+            openerIndex = i;
             gap = 0;
-        // otherwise increase the gap 
         } else {
             gap++;
         }
-        // move to the next bit
-        n >>= 1;
     }
 
-    // give the max
-    // + 1 because it inclusive the closing 1
+    // +1 inclusive for the closer (calculate gap)
     return max + 1;
 }
 
-const result = binaryGap(3876);
-const resultSolution = binaryGapSolution(3876);
+// below is the true solution
+var binaryGapSolution = function(n) {
+    // n & -n gives the lowest set bit (e.g., 1000 & 0111+1 = 1000 → value 8)
+    // Dividing n by its lowest set bit shifts out all trailing zeros
+    // Example: n = 40 (101000), n & -n = 8 (001000), 40 / 8 = 5 (101)
+    // trailing zero has no pair of bit to check
+    n /= (n & -n);
+    // single bit of 1 is power of 2
+    // power of 2 has no a pair of bit
+    if (n === 1) return 0;
+
+    let max = 0, gap = 0;
+
+    // loop over unit the bits are all 0
+    while (n) {
+        // rightmost bit is the closer
+        if (n & 1) {
+            max = Math.max(max, gap);
+            gap = 0;
+        } else {
+            gap++;
+        }
+        // move to rightmost
+        // next bit to check
+        n >>= 1;
+    }
+    // + 1 inclusive the closer (calculate distance)
+    return max + 1;
+}
+
+const number = 1024;
+const result = binaryGap(number);
+const resultSolution = binaryGapSolution(number);
 console.log(`binaryGap() = ${result}, binaryGapSolution() = ${resultSolution}`);
